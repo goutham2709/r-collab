@@ -32,7 +32,7 @@ Let's start with looking at the "genres" column, and seeing if this is correctly
 
 genres <- data$genres
 genres <- gsub("\'","\"", genres)
-genres <- replace_na(genres, "\"NA\"")
+# genres <- replace_na(genres, "\"NA\"")
 genres <- na.omit(genres)
 
 parsed.genres <- lapply(genres, fromJSON)
@@ -43,9 +43,7 @@ print(head(parsed.genres))
 ```{r production_companies}
 
 production_companies <- data$production_companies
-production_companies <- gsub("\'","\"", production_companies)
-production_companies <- gsub("\\\\","/", production_companies)
-# production_companies <- gsub("\"","\"", production_companies)
+production_companies <- gsub("\\\\'","\"", production_companies)
 production_companies <- replace_na(production_companies, "\"NA\"")
 production_companies <- na.omit(production_companies)
 
@@ -58,12 +56,11 @@ print(head(parsed.production_companies))
 
 production_countries <- data$production_countries
 production_countries <- gsub("\'","\"", production_countries)
-#production_countries <- gsub("\\","", production_countries)
 production_countries <- replace_na(production_countries, "\"NA\"")
 production_countries <- na.omit(production_countries)
 
 parsed.production_companies <- lapply(production_countries, fromJSON)
-print(head(production_countries))
+print(head(parsed.production_companies))
 
 ```
 
@@ -71,12 +68,11 @@ print(head(production_countries))
 
 spoken_languages <- data$spoken_languages
 spoken_languages <- gsub("\'","\"", spoken_languages)
-#spoken_languages <- gsub("\\","", spoken_languages)
 spoken_languages <- replace_na(spoken_languages, "\"NA\"")
 spoken_languages <- na.omit(spoken_languages)
 
 parsed.spoken_languages <- lapply(spoken_languages, fromJSON)
-print(head(spoken_languages))
+print(head(parsed.spoken_languages))
 
 ```
 
@@ -84,12 +80,11 @@ print(head(spoken_languages))
 
 Keywords <- data$Keywords
 Keywords <- gsub("\'","\"", Keywords)
-#Keywords <- gsub("\\","", Keywords)
 Keywords <- replace_na(Keywords, "\"NA\"")
 Keywords <- na.omit(Keywords)
 
 parsed.Keywords <- lapply(Keywords, fromJSON)
-print(head(Keywords))
+print(head(parsed.Keywords))
 
 ```
 
@@ -97,12 +92,11 @@ print(head(Keywords))
 
 cast <- data$cast
 cast <- gsub("\'","\"", cast)
-# cast <- gsub("\\","", cast)
 cast <- replace_na(cast, "\"NA\"")
 cast <- na.omit(cast)
 
 parsed.cast <- lapply(cast, fromJSON)
-print(head(cast))
+print(head(parsed.cast))
 
 ```
 
@@ -110,12 +104,11 @@ print(head(cast))
 
 crew <- data$crew
 crew <- gsub("\'","\"", crew)
-# crew <- gsub("\\","", crew)
 crew <- replace_na(crew, "\"NA\"")
 crew <- na.omit(crew)
 
 parsed.crew <- lapply(crew, fromJSON)
-print(head(crew))
+print(head(parsed.crew))
 
 ```
 The JSON parses doesn't deal with NAs very well, and so this data loses the 7 rows where the genres are NA.  This can possible be dealt with later, but we're on track.
