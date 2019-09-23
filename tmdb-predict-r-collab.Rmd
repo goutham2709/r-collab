@@ -1,6 +1,6 @@
 ---
 title: "TMDB Prediction - R-Collab"
-author: "Mike Marse"
+author: "Mike and Goutham"
 date: "September 22, 2019"
 output: html_document
 ---
@@ -11,28 +11,50 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # TMDB Predict - R Collab
 
-## Data loading and cleaning
+## 1. Data loading and cleaning
 
-```{r}
+```{r libraries, message=FALSE, warning=FALSE}
 library(tidyverse)
+library(jsonlite)
 
+```
+
+```{r data loading}
 data <- read_csv("train.csv")
 print(data)
 ```
 
 We load our initial data as a tibble, and start inspecting it. As a tibble, we can safely load it and it just gives us the first ten rows with color-coded information on column types.
 
-## Exploratory Data Analysis
+Let's start with looking at the "genres" column, and seeing if this is correctly formed json we can play with.
 
-## Feature Engineering
+```{r genres}
 
-## Prediction 1
+genres <- data$genres
+genres <- gsub("\'","\"", genres)
+genres <- na.omit(genres)
 
-## Validation 1
+parsed.genres <- lapply(genres, fromJSON)
+print(head(parsed.genres))
 
-## Prediction 2
+```
 
-## Validation 2
+The JSON parses doesn't deal with NAs very well, and so this data loses the 7 rows where the genres are NA.  This can possible be dealt with later, but we're on track.
+
+
+
+
+## 2. Exploratory Data Analysis
+
+## 3. Feature Engineering
+
+## 4. Prediction 1
+
+## 5. Validation 1
+
+## 6. Prediction 2
+
+## 7. Validation 2
 
 <!-- and so on... -->
 
