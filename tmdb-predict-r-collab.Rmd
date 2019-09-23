@@ -61,7 +61,9 @@ parse.column <- function(data.input) {
   return(parsed)
 }
 
-parsed.data <- tibble("genres" = sapply(data$genres, parse.column))
+parsed.data <- tibble("genres" = sapply(data$genres, parse.column),
+                      "production_countries" = sapply(data$production_countries, parse.column),
+                      "spoken_languages" = sapply(data$spoken_languages, parse.column))
 
 ```
 
