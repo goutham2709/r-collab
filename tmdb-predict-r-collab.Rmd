@@ -34,16 +34,29 @@ genres <- data$genres
 genres <- gsub("\'","\"", genres)
 # genres <- replace_na(genres, "\"NA\"")
 genres <- na.omit(genres)
+# 
+# parsed.genres <- lapply(genres, fromJSON)
+# print(head(parsed.genres))
+#genres <- as_tibble(parsed.genres)
 
-parsed.genres <- lapply(genres, fromJSON)
-print(head(parsed.genres))
+parse.column <- function(x)  {
+     str_c("[ ", str_c(x, collapse = ",", sep=" "), " ]")  %>% 
+     fromJSON(flatten = T) %>% 
+     as.tibble()
+                                }
+
+column_data <- genres  %>% 
+  select() %>%
+    map_dfc(.f = parse.column)
+print(column_data)
 
 ```
 
 ```{r production_companies}
 
 production_companies <- data$production_companies
-production_companies <- gsub("\\\\'","\"", production_companies)
+production_companies <- gsub("\'","\"", production_companies)
+production_companies <- gsub("\'","\"", production_companies)
 production_companies <- replace_na(production_companies, "\"NA\"")
 production_companies <- na.omit(production_companies)
 
@@ -85,6 +98,17 @@ Keywords <- na.omit(Keywords)
 
 parsed.Keywords <- lapply(Keywords, fromJSON)
 print(head(parsed.Keywords))
+
+# Another way
+parse.column <- function(x)  {
+     str_c("[ ", str_c(x, collapse = ",", sep=" "), " ]")  %>% 
+     fromJSON(flatten = T) %>% 
+     as.tibble()
+                                }
+
+column_data <- data$Keywords  %>% 
+    map_dfc(.f = parse.column)
+
 
 ```
 
