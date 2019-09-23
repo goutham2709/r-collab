@@ -13,4 +13,26 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Data loading and cleaning
 
+```{r}
+library(tidyverse)
+
+data <- read_csv("train.csv")
+print(data)
+```
+
+We load our initial data as a tibble, and start inspecting it. As a tibble, we can safely load it and it just gives us the first ten rows with color-coded information on column types.
+
 ## Exploratory Data Analysis
+
+## Feature Engineering
+
+## Prediction 1
+
+## Validation 1
+
+## Prediction 2
+
+## Validation 2
+
+<!-- and so on... -->
+
