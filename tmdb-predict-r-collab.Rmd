@@ -52,6 +52,19 @@ print(column_data)
 
 ```
 
+```{r 2nd parsing function idea}
+
+parse.column <- function(data.input) {
+  unparsed <- gsub("\'","\"", data.input)
+  unparsed <- replace_na(unparsed, "\"NA\"")
+  parsed <- lapply(unparsed, fromJSON)
+  return(parsed)
+}
+
+parsed.data <- tibble("genres" = sapply(data$genres, parse.column))
+
+```
+
 ```{r production_companies}
 
 production_companies <- data$production_companies
