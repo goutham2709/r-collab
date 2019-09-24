@@ -32,7 +32,7 @@ Let's start with looking at the "genres" column, and seeing if this is correctly
 
 genres <- data$genres
 genres <- gsub("\'","\"", genres)
-genres <- na.omit(genres)
+genres <- replace_na(genres, "\"NA\"")
 
 parsed.genres <- lapply(genres, fromJSON)
 print(head(parsed.genres))
