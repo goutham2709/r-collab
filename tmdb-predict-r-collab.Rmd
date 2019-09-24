@@ -53,6 +53,27 @@ parsed.data <- tibble("genres" = sapply(data$genres, parse.column),
                       "production_countries" = sapply(data$production_countries, parse.column),
                       "spoken_languages" = sapply(data$spoken_languages, parse.column))
 
+parsed.data
+```
+
+```{r regex function}
+
+for(i in seq_along(data$genres)){
+    unparsed <- data$genres[i]
+        
+    # print(unparsed)
+    
+}
+
+# typeof(data$genres)
+length(data$genres)
+```
+
+```{r converting belongs_to_collection into binary}
+
+to.binary <- is.na(data$belongs_to_collection) %>% as.numeric()
+# to.binary
+
 ```
 
 ```{r production_companies}
