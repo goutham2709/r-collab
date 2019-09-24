@@ -32,16 +32,126 @@ Let's start with looking at the "genres" column, and seeing if this is correctly
 
 genres <- data$genres
 genres <- gsub("\'","\"", genres)
-genres <- replace_na(genres, "\"NA\"")
+# genres <- replace_na(genres, "\"NA\"")
+genres <- na.omit(genres)
+# 
+# parsed.genres <- lapply(genres, fromJSON)
+# print(head(parsed.genres))
+#genres <- as_tibble(parsed.genres)
 
-parsed.genres <- lapply(genres, fromJSON)
-print(head(parsed.genres))
+parse.column <- function(x)  {
+     str_c("[ ", str_c(x, collapse = ",", sep=" "), " ]")  %>% 
+     fromJSON(flatten = T) %>% 
+     as.tibble()
+                                }
+
+column_data <- genres  %>% 
+  select() %>%
+    map_dfc(.f = parse.column)
+print(column_data)
+
 
 ```
 
+```{r 2nd parsing function idea}
+
+parse.column <- function(data.input) {
+  unparsed <- gsub("\'","\"", data.input)
+  unparsed <- replace_na(unparsed, "\"NA\"")
+  parsed <- lapply(unparsed, fromJSON)
+  return(parsed)
+}
+
+parsed.data <- tibble("genres" = sapply(data$genres, parse.column),
+                      "production_countries" = sapply(data$production_countries, parse.column),
+                      "spoken_languages" = sapply(data$spoken_languages, parse.column))
+
+```
+
+```{r production_companies}
+
+production_companies <- data$production_companies
+production_companies <- gsub("\'","\"", production_companies)
+production_companies <- gsub("\'","\"", production_companies)
+production_companies <- replace_na(production_companies, "\"NA\"")
+production_companies <- na.omit(production_companies)
+
+parsed.production_companies <- lapply(production_companies, fromJSON)
+print(head(parsed.production_companies))
+
+```
+
+```{r production_countries}
+
+production_countries <- data$production_countries
+production_countries <- gsub("\'","\"", production_countries)
+production_countries <- replace_na(production_countries, "\"NA\"")
+production_countries <- na.omit(production_countries)
+
+parsed.production_companies <- lapply(production_countries, fromJSON)
+print(head(parsed.production_companies))
+
+```
+
+```{r spoken_languages}
+
+spoken_languages <- data$spoken_languages
+spoken_languages <- gsub("\'","\"", spoken_languages)
+spoken_languages <- replace_na(spoken_languages, "\"NA\"")
+spoken_languages <- na.omit(spoken_languages)
+
+parsed.spoken_languages <- lapply(spoken_languages, fromJSON)
+print(head(parsed.spoken_languages))
+
+```
+
+```{r Keywords}
+
+Keywords <- data$Keywords
+Keywords <- gsub("\'","\"", Keywords)
+Keywords <- replace_na(Keywords, "\"NA\"")
+Keywords <- na.omit(Keywords)
+
+parsed.Keywords <- lapply(Keywords, fromJSON)
+print(head(parsed.Keywords))
+
+# Another way
+parse.column <- function(x)  {
+     str_c("[ ", str_c(x, collapse = ",", sep=" "), " ]")  %>% 
+     fromJSON(flatten = T) %>% 
+     as.tibble()
+                                }
+
+column_data <- data$Keywords  %>% 
+    map_dfc(.f = parse.column)
+
+
+```
+
+```{r cast}
+
+cast <- data$cast
+cast <- gsub("\'","\"", cast)
+cast <- replace_na(cast, "\"NA\"")
+cast <- na.omit(cast)
+
+parsed.cast <- lapply(cast, fromJSON)
+print(head(parsed.cast))
+
+```
+
+```{r crew}
+
+crew <- data$crew
+crew <- gsub("\'","\"", crew)
+crew <- replace_na(crew, "\"NA\"")
+crew <- na.omit(crew)
+
+parsed.crew <- lapply(crew, fromJSON)
+print(head(parsed.crew))
+
+```
 The JSON parses doesn't deal with NAs very well, and so this data loses the 7 rows where the genres are NA.  This can possible be dealt with later, but we're on track.
-
-
 
 
 ## 2. Exploratory Data Analysis
