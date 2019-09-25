@@ -44,15 +44,31 @@ print(head(parsed.genres))
 ```{r 2nd parsing function idea}
 
 parse.column <- function(data.input) {
-  unparsed <- gsub("\'","\"", data.input)
-  unparsed <- replace_na(unparsed, "\"NA\"")
-  parsed <- lapply(unparsed, fromJSON)
+  unparsed <- gsub("\'","\"", data.input) #change single quotes to doubles
+  unparsed <- replace_na(unparsed, "\"NA\"") #replace NA with "NA"
+  
+  # here we fix parsing problems before the parsing begins
+  
+  gsub("None", "\"None\"", unparsed) # changes None to "None"
+  
+  # the input gets parsed from JSON into lists
+  parsed <- lapply(unparsed, fromJSON) #use JSONlite to parse the input
+  
+  # here we add data cleaning for specific columns
+  if (grepl("Cowgirls n\" Angels", parsed)) {
+    gsub("n\"", "n\'", parsed) # fixes the "Cowboys N' Angels" line in id=137 of belongs_to_collection
+  }
+
+  
   return(parsed)
 }
 
+
+
 parsed.data <- tibble("genres" = sapply(data$genres, parse.column),
                       "production_countries" = sapply(data$production_countries, parse.column),
-                      "spoken_languages" = sapply(data$spoken_languages, parse.column))
+                      "spoken_languages" = sapply(data$spoken_languages, parse.column),
+                      "belongs_to_collection" = sapply(data$belongs_to_collection, parse.column))
 
 parsed.data
 ```
