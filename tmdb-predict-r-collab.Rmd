@@ -32,23 +32,11 @@ Let's start with looking at the "genres" column, and seeing if this is correctly
 
 genres <- data$genres
 genres <- gsub("\'","\"", genres)
-# genres <- replace_na(genres, "\"NA\"")
+genres <- replace_na(genres, "\"NA\"")
 genres <- na.omit(genres)
-# 
-# parsed.genres <- lapply(genres, fromJSON)
-# print(head(parsed.genres))
-#genres <- as_tibble(parsed.genres)
 
-parse.column <- function(x)  {
-     str_c("[ ", str_c(x, collapse = ",", sep=" "), " ]")  %>% 
-     fromJSON(flatten = T) %>% 
-     as.tibble()
-                                }
-
-column_data <- genres  %>% 
-  select() %>%
-    map_dfc(.f = parse.column)
-print(column_data)
+parsed.genres <- lapply(genres, fromJSON)
+print(head(parsed.genres))
 
 
 ```
@@ -66,18 +54,48 @@ parsed.data <- tibble("genres" = sapply(data$genres, parse.column),
                       "production_countries" = sapply(data$production_countries, parse.column),
                       "spoken_languages" = sapply(data$spoken_languages, parse.column))
 
+parsed.data
+```
+
+```{r regex function}
+
+for(i in seq_along(data$genres)){
+    unparsed <- data$genres[i]
+        
+    # print(unparsed)
+    
+}
+
+# typeof(data$genres)
+length(data$genres)
+```
+
+```{r converting belongs_to_collection into binary}
+
+to.binary <- is.na(data$belongs_to_collection) %>% as.numeric()
+# to.binary
+
 ```
 
 ```{r production_companies}
 
-production_companies <- data$production_companies
-production_companies <- gsub("\'","\"", production_companies)
-production_companies <- gsub("\'","\"", production_companies)
-production_companies <- replace_na(production_companies, "\"NA\"")
-production_companies <- na.omit(production_companies)
+# production_companies <- data$production_companies
+# production_companies <- gsub("\'","\"", production_companies)
+# production_companies <- gsub("\'","\"", production_companies)
+# production_companies <- replace_na(production_companies, "\"NA\"")
+# production_companies <- na.omit(production_companies)
+# 
+# parsed.production_companies <- lapply(production_companies, fromJSON)
+# print(head(parsed.production_companies))
 
-parsed.production_companies <- lapply(production_companies, fromJSON)
-print(head(parsed.production_companies))
+data %>% select(genres) %>% head(3) %>% gsub("\'","\"") %>% replace_na("\"NA\"") %>% na.omit(data)
+
+
+column_data <- data  %>% 
+    select(production_companies) %>%
+    map_dfc(.f = parse.column)
+
+print(column_data)
 
 ```
 
