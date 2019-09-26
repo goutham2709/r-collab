@@ -181,7 +181,7 @@ column_data <- data  %>%
     select(production_companies) %>%
     map_dfc(.f = parse.column)
 
-print(column_data)
+# print(column_data)
 
 ```
 
