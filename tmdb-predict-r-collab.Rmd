@@ -32,7 +32,7 @@ In looking at the data, some of the columns are poorly-formed JSON data. They ha
 Luckly, Georgi Petkov posted some code on the Kaggle website (https://www.kaggle.com/georgipetkov/json-columns-to-data-frame) that parses this particular data set rather well. It strips all of the punctuations, loads the data into matrices, and then converts them to tibbles.
 
 
-```{r Petkov cast}
+```{r Petkov cast, warning=FALSE}
 
 cast_list <- list()
 
@@ -60,7 +60,7 @@ cast_df  %>%
 
 ```
 
-```{r Petkov genres}
+```{r Petkov genres, warning=FALSE}
 genres_list <- list()
 for (i in seq_along(data$genres)) {
   genres_list[[i]] <- data$genres[[i]] %>%
@@ -83,7 +83,7 @@ genres_df %>%
 
 ```
 
-```{r Petkov production companies}
+```{r Petkov production companies, warning=FALSE}
 production_companies_list <- list()
 for (i in seq_along(data$production_companies)) {
   production_companies_list[[i]] <- data$production_companies[[i]] %>%
@@ -107,7 +107,7 @@ production_companies_df %>%
 
 ```
 
-```{r Petkov crew}
+```{r Petkov crew, warning=FALSE}
 
 crew_list <- list()
 
