@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r libraries, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(jsonlite)
+library(DT)
 
 ```
 
@@ -26,54 +27,12 @@ print(data)
 
 We load our initial data as a tibble, and start inspecting it. As a tibble, we can safely load it and it just gives us the first ten rows with color-coded information on column types.
 
-Let's start with looking at the "genres" column, and seeing if this is correctly formed json we can play with.
+In looking at the data, some of the columns are poorly-formed JSON data. They have (for example), single quotation marks where JSON requires double. Changing all the singles to doubles would mess up all of the single quotation marks already present in the data (possessives, french connectives, etc.) and so brute force gsub() and manually editing the data in a spreadsheet were going to end up being too time intensive.
 
-```{r genres}
-
-genres <- data$genres
-genres <- gsub("\'","\"", genres)
-genres <- replace_na(genres, "\"NA\"")
-genres <- na.omit(genres)
-
-parsed.genres <- lapply(genres, fromJSON)
-print(head(parsed.genres))
+Luckly, Georgi Petkov posted some code on the Kaggle website (https://www.kaggle.com/georgipetkov/json-columns-to-data-frame) that parses this particular data set rather well. It strips all of the punctuations, loads the data into matrices, and then converts them to tibbles.
 
 
-```
-
-```{r 2nd parsing function idea}
-
-parse.column <- function(data.input) {
-  unparsed <- gsub("\'","\"", data.input) #change single quotes to doubles
-  unparsed <- replace_na(unparsed, "\"NA\"") #replace NA with "NA"
-  
-  # here we fix parsing problems before the parsing begins
-  
-  gsub("None", "\"None\"", unparsed) # changes None to "None"
-  
-  # the input gets parsed from JSON into lists
-  parsed <- lapply(unparsed, fromJSON) #use JSONlite to parse the input
-  
-  # here we add data cleaning for specific columns
-  if (grepl("Cowgirls n\" Angels", parsed)) {
-    gsub("n\"", "n\'", parsed) # fixes the "Cowboys N' Angels" line in id=137 of belongs_to_collection
-  }
-
-  
-  return(parsed)
-}
-
-
-
-parsed.data <- tibble("genres" = sapply(data$genres, parse.column),
-                      "production_countries" = sapply(data$production_countries, parse.column),
-                      "spoken_languages" = sapply(data$spoken_languages, parse.column),
-                      "belongs_to_collection" = sapply(data$belongs_to_collection, parse.column))
-
-parsed.data
-```
-
-```{r regex cast}
+```{r Petkov cast}
 
 cast_list <- list()
 
@@ -101,10 +60,10 @@ cast_df  %>%
 
 ```
 
-```{r regex genres}
+```{r Petkov genres}
 genres_list <- list()
-for (i in seq_along(train$genres)) {
-  genres_list[[i]] <- train$genres[[i]] %>%
+for (i in seq_along(data$genres)) {
+  genres_list[[i]] <- data$genres[[i]] %>%
     str_extract_all('(?<=\\{).*?(?=\\})') %>% 
     str_split("(?<=[:digit:]|[:punct:]), ",n=Inf,simplify = TRUE) %>% 
     str_extract_all('(?<=\\:[:space:]).*') %>% 
@@ -124,10 +83,10 @@ genres_df %>%
 
 ```
 
-```{r production companies}
+```{r Petkov production companies}
 production_companies_list <- list()
-for (i in seq_along(train$production_companies)) {
-  production_companies_list[[i]] <- train$production_companies[[i]] %>%
+for (i in seq_along(data$production_companies)) {
+  production_companies_list[[i]] <- data$production_companies[[i]] %>%
     str_extract_all('(?<=\\{).*?(?=\\})') %>% 
     str_split("(?<=[:digit:]|[:punct:]), ",n=Inf,simplify = TRUE) %>% 
     str_extract_all('(?<=\\:[:space:]).*') %>% 
@@ -148,12 +107,12 @@ production_companies_df %>%
 
 ```
 
-```{r crew}
+```{r Petkov crew}
 
 crew_list <- list()
 
-for (i in seq_along(train$crew)) {
-  crew_list[[i]] <- train$crew[[i]] %>%
+for (i in seq_along(data$crew)) {
+  crew_list[[i]] <- data$crew[[i]] %>%
     str_extract_all('(?<=\\{).*?(?=\\})') %>% 
     str_split("(?<=[:digit:]|[:punct:]), ",n=Inf,simplify = TRUE) %>% 
     str_extract_all('(?<=\\:[:space:]).*') %>% 
@@ -173,111 +132,63 @@ crew_df%>%
 ```
 
 
-```{r converting belongs_to_collection into binary}
-
-to.binary <- is.na(data$belongs_to_collection) %>% as.numeric()
-# to.binary
-
-```
-
-```{r production_companies}
-
-# production_companies <- data$production_companies
-# production_companies <- gsub("\'","\"", production_companies)
-# production_companies <- gsub("\'","\"", production_companies)
-# production_companies <- replace_na(production_companies, "\"NA\"")
-# production_companies <- na.omit(production_companies)
-# 
-# parsed.production_companies <- lapply(production_companies, fromJSON)
-# print(head(parsed.production_companies))
-
-data %>% select(genres) %>% head(3) %>% gsub("\'","\"") %>% replace_na("\"NA\"") %>% na.omit(data)
-
-
-column_data <- data  %>% 
-    select(production_companies) %>%
-    map_dfc(.f = parse.column)
-
-# print(column_data)
-
-```
-
-```{r production_countries}
-
-production_countries <- data$production_countries
-production_countries <- gsub("\'","\"", production_countries)
-production_countries <- replace_na(production_countries, "\"NA\"")
-production_countries <- na.omit(production_countries)
-
-parsed.production_companies <- lapply(production_countries, fromJSON)
-print(head(parsed.production_companies))
-
-```
-
-```{r spoken_languages}
-
-spoken_languages <- data$spoken_languages
-spoken_languages <- gsub("\'","\"", spoken_languages)
-spoken_languages <- replace_na(spoken_languages, "\"NA\"")
-spoken_languages <- na.omit(spoken_languages)
-
-parsed.spoken_languages <- lapply(spoken_languages, fromJSON)
-print(head(parsed.spoken_languages))
-
-```
-
-```{r Keywords}
-
-Keywords <- data$Keywords
-Keywords <- gsub("\'","\"", Keywords)
-Keywords <- replace_na(Keywords, "\"NA\"")
-Keywords <- na.omit(Keywords)
-
-parsed.Keywords <- lapply(Keywords, fromJSON)
-print(head(parsed.Keywords))
-
-# Another way
-parse.column <- function(x)  {
-     str_c("[ ", str_c(x, collapse = ",", sep=" "), " ]")  %>% 
-     fromJSON(flatten = T) %>% 
-     as.tibble()
-                                }
-
-column_data <- data$Keywords  %>% 
-    map_dfc(.f = parse.column)
-
-
-```
-
-```{r cast}
-
-cast <- data$cast
-cast <- gsub("\'","\"", cast)
-cast <- replace_na(cast, "\"NA\"")
-cast <- na.omit(cast)
-
-parsed.cast <- lapply(cast, fromJSON)
-print(head(parsed.cast))
-
-```
-
-```{r crew}
-
-crew <- data$crew
-crew <- gsub("\'","\"", crew)
-crew <- replace_na(crew, "\"NA\"")
-crew <- na.omit(crew)
-
-parsed.crew <- lapply(crew, fromJSON)
-print(head(parsed.crew))
-
-```
-The JSON parses doesn't deal with NAs very well, and so this data loses the 7 rows where the genres are NA.  This can possible be dealt with later, but we're on track.
-
-
 ## 2. Exploratory Data Analysis
 
+Let's see what we have in the 'budget' column.
+
+```{r budget EDA}
+plot <- ggplot(data = data) + 
+  geom_histogram(aes(x = budget), fill = "dark green", alpha = 0.5)
+print(plot)
+
+```
+
+So, most of the movies in the data are very inexpensively made, and by the time we get to $100,000 (1 * 10^8) in the graph, we're dealing with very few.  We also have a ton of movies with a budget of zero, which we can safely assume means the budget is unknown.
+
+Let's zoom on the left side of this graph.
+
+```{r budget2 EDA}
+cheap.movies <- subset(data, budget > 0 & budget < 10000000)
+
+plot <- ggplot(data = cheap.movies) + 
+  geom_histogram(aes(x = budget), fill = "dark green", alpha = 0.5)
+print(plot)
+
+```
+
+Looks like the movies between 0 and 10 million are fairly even distributed, getting more sparse as they approach 10 million.
+
+We can guess that there's some sort of relationship between budget and revenue, but lets visualize and see.
+
+```{r budget and revenue}
+nonzero.movies <- subset(data, budget > 0)
+
+plot <- ggplot(data = nonzero.movies) + 
+  geom_point(aes(x = budget, y = revenue), color = "dark green", alpha = 0.5)
+print(plot)
+```
+
+Our guess would appear to be roughly accurate.
+
+Let's add a linear regression line.
+
+```{r budget and revenue with linear regression}
+nonzero.movies <- subset(data, budget > 0)
+
+linear.model <- lm(budget ~ revenue, data = nonzero.movies)
+predicted.revenue <- data.frame(predicted = predict(linear.model, nonzero.movies))
+
+plot <- ggplot(data = nonzero.movies) + 
+  geom_point(aes(x = budget, y = revenue), color = "dark green", alpha = 0.5) +
+  geom_line(color = "blue", data = predicted.revenue, aes(x = predicted, y = nonzero.movies$revenue))
+print(plot)
+```
+
+
+
 ## 3. Feature Engineering
+
+### A. Making a profit column
 
 ## 4. Prediction 1
 
