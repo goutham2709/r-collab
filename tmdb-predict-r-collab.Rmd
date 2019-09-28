@@ -184,7 +184,40 @@ plot <- ggplot(data = nonzero.movies) +
 print(plot)
 ```
 
+What about language and budget?
 
+```{r language and budget}
+plot <- ggplot(data = data, aes(x = original_language, y = budget)) +
+  geom_boxplot(color = "light blue")
+
+print(plot)
+
+```
+
+The only languages that make a dent in budget are English (overwhelmingly the highest budgets), then French, Chinese (both zh and cn (mainland Chinese simplified characters)) and Portuguese. Interestingly, it appears there are no mega-budget Hindi language films.
+
+Let's go back and redo our earlier budget and revenue graph, this time coloring the dots by film language.
+
+```{r budget revenue and language}
+nonzero.movies <- subset(data, budget > 0)
+nonzero.movies <- mutate(nonzero.movies, is.english = if_else(original_language == "en", "True", "False"))
+print(head(nonzero.movies$is.english))
+
+plot <- ggplot(data = nonzero.movies) + 
+  geom_point(aes(x = budget, y = revenue, color = is.english), alpha = 0.5)
+print(plot)
+```
+
+What are those non-English outliers?
+
+```{r non english outliers}
+non.english <- subset(nonzero.movies, original_language != "en")
+non.english.sorted <- top_n(non.english, 5, revenue)
+print(non.english.sorted$original_title)
+
+```
+
+Of those, I've (Mike speaking here) only see "La Vita" and found it amazing. Might be a good viewing list for the future.
 
 ## 3. Feature Engineering
 
