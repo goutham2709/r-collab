@@ -253,6 +253,7 @@ There is no noticable relationsip between movie runtimes and their budget.
 plot <- ggplot(data = genres_df)+
   geom_bar(aes(x = name), fill = "dark green", alpha = 0.5)+
   coord_flip()
+  # coord_polar()
 
 ## Unable to reorder bars form high to low..
   
