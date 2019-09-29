@@ -219,6 +219,52 @@ print(non.english.sorted$original_title)
 
 Of those, I've (Mike speaking here) only see "La Vita" and found it amazing. Might be a good viewing list for the future.
 
+```{r Popular movie runtimes}
+plot <- ggplot(data = data)+
+  geom_histogram(mapping = aes(x = runtime), fill = "dark green", alpha = 0.5)+
+        geom_vline(xintercept = mean(data$runtime), color = "red", linetype = "dashed")
+
+## Unable to get the mean line working..
+
+print(plot)
+
+```
+Most of the movies seem to run for about 100 minutes (1hr 40min) long.
+
+```{r Movie ratings}
+plot <- ggplot(data = data) +
+  geom_boxplot(aes(y = popularity), color = "light blue")+
+  coord_cartesian(ylim=c(0,20))
+
+print(plot)
+summary(data$popularity)
+```
+From the box plot, most of the movies on our dataset have a median rating of 7.5 
+
+```{r Do the movies that have longer runtimes have a bigger budget?}
+plot <- ggplot(data = data)+
+  geom_point(aes(x = runtime, y = budget), color = "dark green", alpha = 0.5)
+print(plot)
+
+```
+There is no noticable relationsip between movie runtimes and their budget.
+
+```{r Popular genres}
+plot <- ggplot(data = genres_df)+
+  geom_bar(aes(x = name), fill = "dark green", alpha = 0.5)+
+  coord_flip()
+  
+print(plot)
+```
+Most popluar movie genres are dramas, followed by comedy, thriller and action. The drama genre has more more than tiwce the number of movies in the action genre.
+
+```{r Movie ratings corresponding to its genre/ which genre has the highest ratings?}
+
+plot <- ggplot(genres_df)+
+  geom_bar(aes(x = ))
+
+```
+
 ## 3. Feature Engineering
 
 ### A. Making a profit column
