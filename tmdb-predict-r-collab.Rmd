@@ -239,7 +239,7 @@ plot <- ggplot(data = data) +
 print(plot)
 summary(data$popularity)
 ```
-From the box plot, most of the movies on our dataset have a median rating of 7.5 
+From the box plot, movies in our dataset has a median rating of 7.5 
 
 ```{r Do the movies that have longer runtimes have a bigger budget?}
 plot <- ggplot(data = data)+
@@ -277,6 +277,8 @@ as.factor(genres_df$name)
 plot <- ggplot(genres_df)+
   geom_bar(aes(x = ))
 
+names(data)
+
 ```
 
 
@@ -288,6 +290,17 @@ print(plot)
 
 ##Unable to get a clear plot. Am I missing something? Too many and too large company names maybe? How do we visualize this column?
 ```
+
+```{r How runtimes vary with languages?}
+plot <- ggplot(data = data, aes(x = fct_reorder(original_language, runtime, .desc = T), y = runtime)) +
+  geom_boxplot(color = "dark blue")+
+  labs(x = "Original language")
+  # coord_flip()
+
+print(plot)
+
+```
+
 ## 3. Feature Engineering
 
 ### A. Making a profit column
