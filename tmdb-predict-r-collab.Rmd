@@ -102,7 +102,7 @@ production_companies_df <- bind_rows(production_companies_list, .id = 'movie_id'
 
 
 production_companies_df %>% 
-  head(10) %>% 
+  head(20) %>% 
   DT::datatable()
 
 ```
@@ -253,18 +253,40 @@ There is no noticable relationsip between movie runtimes and their budget.
 plot <- ggplot(data = genres_df)+
   geom_bar(aes(x = name), fill = "dark green", alpha = 0.5)+
   coord_flip()
+
+## Unable to reorder bars form high to low..
   
 print(plot)
 ```
-Most popluar movie genres are dramas, followed by comedy, thriller and action. The drama genre has more more than tiwce the number of movies in the action genre.
+Most popluar movie genres are dramas, followed by comedy, thriller and action. The drama genre has more more than tiwce the number of movies in the action genre. More than half the movies in our dataset are dramas.
 
-```{r Movie ratings corresponding to its genre/ which genre has the highest ratings?}
+
+```{r Movie ratings corresponding to its genre / which genre has the highest ratings?}
+## I'm trying to write a function here that can subset different genres and calculate the average rating for each genre and show it next to the bar in the graph above.
+
+funk <- function(){
+}
+
+subset(genres_df, name == "Comedy")
+as.factor(genres_df$name)
+
+
+
 
 plot <- ggplot(genres_df)+
   geom_bar(aes(x = ))
 
 ```
 
+
+```{r Popular production companies}
+plot <- ggplot(data = production_companies_df)+
+  geom_bar(aes(x = name), fill = "dark green", alpha = 0.5)+
+  coord_flip()
+print(plot)
+
+##Unable to get a clear plot. Am I missing something? Too many and too large company names maybe? How do we visualize this column?
+```
 ## 3. Feature Engineering
 
 ### A. Making a profit column
