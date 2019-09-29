@@ -300,6 +300,20 @@ plot <- ggplot(data = data, aes(x = fct_reorder(original_language, runtime, .des
 print(plot)
 
 ```
+Russian movies have the lowest runtimes while Marathi(One of indian language) has the highest runtime. Followed by Tamil (Also an indian languge). Fourth longest is Telugu and fifth is Hindi (Again, both are Indian languages). Indonesia has the third longest runtime and vietnamise comes in at sixth. Overall, south east asian countries seem to have the longest movies.
+
+English movies, which has the largest budget of all the movies don't run longer than movies with less budget. This supports our findings from the budget vs runtime scatter plot where we said there was no clear relationship betweeen movie runtime and it's budget.
+
+Open this link for the language codes: http://www.lingoes.net/en/translator/langcode.htm
+
+```{r Which language has the highest revenue}
+plot <- ggplot(data)+
+  stat_summary(aes(x = revenue, y = original_language), fun.ymin = min, fun.ymax = max,fun.y = median)+
+  coord_flip()
+print(plot)
+
+```
+English movies seem to have the higest revenue. As we saw earlier, they also have the highest budget from the budget vs origianl laguage boxplot. Chinese, French, Japanese and Hindi movies have similar revenues but nowhere near the english movies.
 
 ## 3. Feature Engineering
 
