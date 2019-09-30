@@ -81,6 +81,8 @@ genres_df %>%
   head(10) %>% 
   DT::datatable()
 
+# dim(genres_df)
+
 ```
 
 ```{r Petkov production companies, warning=FALSE}
@@ -91,7 +93,7 @@ for (i in seq_along(data$production_companies)) {
     str_split("(?<=[:digit:]|[:punct:]), ",n=Inf,simplify = TRUE) %>% 
     str_extract_all('(?<=\\:[:space:]).*') %>% 
     str_replace_all("[:punct:]","") %>% 
-    matrix( ncol = 2,  byrow = TRUE,dimnames=list(c(),
+    # matrix( ncol = 2,  byrow = TRUE,dimnames=list(c(),
                                                   c("name","id"))) %>% 
     as_tibble(stringsAsFactors = FALSE)
 }
@@ -220,44 +222,41 @@ print(non.english.sorted$original_title)
 Of those, I've (Mike speaking here) only see "La Vita" and found it amazing. Might be a good viewing list for the future.
 
 ```{r Popular movie runtimes}
-plot <- ggplot(data = data)+
+ggplot(data = data)+
   geom_histogram(mapping = aes(x = runtime), fill = "dark green", alpha = 0.5)+
         geom_vline(xintercept = mean(data$runtime), color = "red", linetype = "dashed")
 
 ## Unable to get the mean line working..
 
-print(plot)
 
 ```
 Most of the movies seem to run for about 100 minutes (1hr 40min) long.
 
 ```{r Movie ratings}
-plot <- ggplot(data = data) +
+ggplot(data = data) +
   geom_boxplot(aes(y = popularity), color = "light blue")+
   coord_cartesian(ylim=c(0,20))
 
-print(plot)
-summary(data$popularity)
+# summary(data$popularity)
 ```
 From the box plot, movies in our dataset has a median rating of 7.5 
 
 ```{r Do the movies that have longer runtimes have a bigger budget?}
-plot <- ggplot(data = data)+
+ggplot(data = data)+
   geom_point(aes(x = runtime, y = budget), color = "dark green", alpha = 0.5)
-print(plot)
+
 
 ```
 There is no noticable relationsip between movie runtimes and their budget.
 
 ```{r Popular genres}
-plot <- ggplot(data = genres_df)+
+ggplot(data = genres_df)+
   geom_bar(aes(x = name), fill = "dark green", alpha = 0.5)+
   coord_flip()
   # coord_polar()
 
 ## Unable to reorder bars form high to low..
-  
-print(plot)
+
 ```
 Most popluar movie genres are dramas, followed by comedy, thriller and action. The drama genre has more more than tiwce the number of movies in the action genre. More than half the movies in our dataset are dramas.
 
@@ -265,8 +264,8 @@ Most popluar movie genres are dramas, followed by comedy, thriller and action. T
 ```{r Movie ratings corresponding to its genre / which genre has the highest ratings?}
 ## I'm trying to write a function here that can subset different genres and calculate the average rating for each genre and show it next to the bar in the graph above.
 
-funk <- function(){
-}
+# (genre_popularity <-data.frame(genres_df$name, data$popularity))
+
 
 subset(genres_df, name == "Comedy")
 as.factor(genres_df$name)
@@ -283,21 +282,19 @@ names(data)
 
 
 ```{r Popular production companies}
-plot <- ggplot(data = production_companies_df)+
+ggplot(data = production_companies_df)+
   geom_bar(aes(x = name), fill = "dark green", alpha = 0.5)+
   coord_flip()
-print(plot)
 
 ##Unable to get a clear plot. Am I missing something? Too many and too large company names maybe? How do we visualize this column?
 ```
 
 ```{r How runtimes vary with languages?}
-plot <- ggplot(data = data, aes(x = fct_reorder(original_language, runtime, .desc = T), y = runtime)) +
+ggplot(data = data, aes(x = fct_reorder(original_language, runtime, .desc = T), y = runtime)) +
   geom_boxplot(color = "dark blue")+
   labs(x = "Original language")
   # coord_flip()
 
-print(plot)
 
 ```
 Russian movies have the lowest runtimes while Marathi(One of indian language) has the highest runtime. Followed by Tamil (Also an indian languge). Fourth longest is Telugu and fifth is Hindi (Again, both are Indian languages). Indonesia has the third longest runtime and vietnamise comes in at sixth. Overall, south east asian countries seem to have the longest movies.
@@ -306,14 +303,22 @@ English movies, which has the largest budget of all the movies don't run longer 
 
 Open this link for the language codes: http://www.lingoes.net/en/translator/langcode.htm
 
-```{r Which language has the highest revenue}
-plot <- ggplot(data)+
+```{r Which language has the highest revenue?}
+ggplot(data)+
   stat_summary(aes(x = revenue, y = original_language), fun.ymin = min, fun.ymax = max,fun.y = median)+
   coord_flip()
-print(plot)
 
 ```
 English movies seem to have the higest revenue. As we saw earlier, they also have the highest budget from the budget vs origianl laguage boxplot. Chinese, French, Japanese and Hindi movies have similar revenues but nowhere near the english movies.
+
+```{r Make cast vs Female cast}
+ggplot(cast_df)+
+  geom_bar(aes(x = gender), fill = "dark green", alpha = 0.5)
+
+
+## Unable to print plot properly. Don't know what's going wrong..!
+
+```
 
 ## 3. Feature Engineering
 
