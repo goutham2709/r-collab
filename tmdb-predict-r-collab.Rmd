@@ -360,7 +360,7 @@ ggplot(data)+
   geom_boxplot(aes(x = fct_reorder(original_language, popularity, .desc = T), y = popularity), color = "dark blue")+
   xlab("Original language")
 ```
-To our suprise, Norwegian language seems to be the most popular followed by Indonesian and then english. Hebrew comes in at fourth and japanese at fifth. Indian movies, tough they are lengthy, doesn't seem to be liked by everyone.
+To our suprise, Norwegian language seems to be the most popular followed by Indonesian and then english. Hebrew comes in at fourth and japanese at fifth. Indian movies, tough they are lengthy, are not liked by everyone.
 
 ## 3. Feature Engineering
 
