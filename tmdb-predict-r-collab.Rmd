@@ -241,13 +241,33 @@ ggplot(data = data) +
 ```
 From the box plot, movies in our dataset has a median rating of 7.5 
 
+```{r Runtime vs Revenue}
+ggplot(data)+
+  geom_point(aes(x = runtime, y = revenue),color = "dark green", alpha = 0.5)
+```
+Movies that have higher revenue are not necessarily the longest movies or vice versa. The scatter plot shows no noticable relationship between the runtime of the movies and it's revenue.
+
 ```{r Do the movies that have longer runtimes have a bigger budget?}
 ggplot(data = data)+
   geom_point(aes(x = runtime, y = budget), color = "dark green", alpha = 0.5)
 
 
 ```
-There is no noticable relationsip between movie runtimes and their budget.
+We assumed that movies with longer runtimes might have bigger budgets. But from the scatter plot above, we can see that it is not the case. The movies that have longer runtimes doesn't necessaritly have the bigger budget than those of shorter movies.
+
+```{r How runtimes vary with languages?}
+ggplot(data = data, aes(x = fct_reorder(original_language, runtime, .desc = T), y = runtime)) +
+  geom_boxplot(color = "dark blue")+
+  labs(x = "Original language")
+  # coord_flip()
+
+
+```
+Russian movies have the lowest runtimes while Marathi(One of indian language) has the highest runtime. Followed by Tamil (Also an indian languge). Fourth longest is Telugu and fifth is Hindi (Again, both are Indian languages). Indonesia has the third longest runtime and vietnamise comes in at sixth. Overall, south east asian countries seem to have the longest movies.
+
+English movies, which has the largest budget of all the movies don't run longer than movies with less budget. This supports our findings from the budget vs runtime scatter plot where we said there was no clear relationship betweeen movie runtime and it's budget.
+
+Open this link for the language codes: http://www.lingoes.net/en/translator/langcode.htm
 
 ```{r Popular genres}
 ggplot(data = genres_df)+
@@ -289,19 +309,6 @@ ggplot(data = production_companies_df)+
 ##Unable to get a clear plot. Am I missing something? Too many and too large company names maybe? How do we visualize this column?
 ```
 
-```{r How runtimes vary with languages?}
-ggplot(data = data, aes(x = fct_reorder(original_language, runtime, .desc = T), y = runtime)) +
-  geom_boxplot(color = "dark blue")+
-  labs(x = "Original language")
-  # coord_flip()
-
-
-```
-Russian movies have the lowest runtimes while Marathi(One of indian language) has the highest runtime. Followed by Tamil (Also an indian languge). Fourth longest is Telugu and fifth is Hindi (Again, both are Indian languages). Indonesia has the third longest runtime and vietnamise comes in at sixth. Overall, south east asian countries seem to have the longest movies.
-
-English movies, which has the largest budget of all the movies don't run longer than movies with less budget. This supports our findings from the budget vs runtime scatter plot where we said there was no clear relationship betweeen movie runtime and it's budget.
-
-Open this link for the language codes: http://www.lingoes.net/en/translator/langcode.htm
 
 ```{r Which language has the highest revenue?}
 ggplot(data)+
@@ -309,6 +316,7 @@ ggplot(data)+
   coord_flip()
 
 ```
+
 English movies seem to have the higest revenue. As we saw earlier, they also have the highest budget from the budget vs origianl laguage boxplot. Chinese, French, Japanese and Hindi movies have similar revenues but nowhere near the english movies.
 
 ```{r Make cast vs Female cast}
@@ -317,8 +325,42 @@ ggplot(cast_df)+
 
 
 ## Unable to print plot properly. Don't know what's going wrong..!
+names(data)
 
 ```
+```{r Popularity vs Revenue}
+ggplot(data)+
+  geom_point(aes(x = revenue, y = popularity), color = "dark green", alpha = 0.5)
+
+```
+
+One would assume that a popoular movie would bring in more revuenue. This seems to be not the case. From the popularity vs revenue scatter plot above, a popular movie doesn't necessarily bring in more revenue. It can also be said that a movie that has good amount of boxoffice collections might not be popular. Let's look at the correlation between movie popularity and it's revenue.
+
+```{r correlation of popularity and revenue}
+cor(data$revenue, data$popularity)
+```
+
+The correlation value of 0.46 suppors our findings from the popularity vs revenue scatter plot. It shows a weak relationship between the two vairables.
+
+```{r which language has the most revenue?}
+ggplot(data)+
+  geom_boxplot(aes(x = fct_reorder(original_language, revenue, .desc = T), y = revenue), color = "dark blue")+
+  xlab("Original language")
+```
+Unsuprisingly, english movies has the highest revenue among all the languages. English movies overwhelmengly had the highest budget and highest revenue.Japanese movies which has the second highest revenue is among the movies with high budget. This box plot combined with the budget vs original language boxplot actually shows the relationship depected by the budget vs revenue scatter plot. There is a clear relationship between the budget and the revenue. Let's look at the correlation.
+
+```{r correlation of budget vs revenue}
+cor(data$budget, data$revenue)
+```
+
+Correlation of 0.75 is fairly high and a good indicator of relationship between revenue and budget.
+
+```{r popular languages}
+ggplot(data)+
+  geom_boxplot(aes(x = fct_reorder(original_language, popularity, .desc = T), y = popularity), color = "dark blue")+
+  xlab("Original language")
+```
+To our suprise, Norwegian language seems to be the most popular followed by Indonesian and then english. Hebrew comes in at fourth and japanese at fifth. Indian movies, tough they are lengthy, doesn't seem to be liked by everyone.
 
 ## 3. Feature Engineering
 
