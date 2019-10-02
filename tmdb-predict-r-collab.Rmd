@@ -93,7 +93,7 @@ for (i in seq_along(data$production_companies)) {
     str_split("(?<=[:digit:]|[:punct:]), ",n=Inf,simplify = TRUE) %>% 
     str_extract_all('(?<=\\:[:space:]).*') %>% 
     str_replace_all("[:punct:]","") %>% 
-    # matrix( ncol = 2,  byrow = TRUE,dimnames=list(c(),
+    matrix( ncol = 2,  byrow = TRUE,dimnames=list(c(),
                                                   c("name","id"))) %>% 
     as_tibble(stringsAsFactors = FALSE)
 }
@@ -270,12 +270,14 @@ English movies, which has the largest budget of all the movies don't run longer 
 Open this link for the language codes: http://www.lingoes.net/en/translator/langcode.htm
 
 ```{r Popular genres}
-ggplot(data = genres_df)+
-  geom_bar(aes(x = name), fill = "dark green", alpha = 0.5)+
-  coord_flip()
-  # coord_polar()
+genres_df$names.factored <- as.factor(genres_df$name)
+summary.genres <- genres_df %>% group_by(names.factored) %>% summarize(num1 = n())
 
-## Unable to reorder bars form high to low..
+ggplot(data = summary.genres) +
+  geom_bar(aes(x = reorder(names.factored, num1), y = num1), fill = "dark green", alpha = 0.5, stat = "identity") +
+  coord_flip()
+
+## Sorted now, just have to turn the columns into factors, and then reorder() them by the count of that factor.
 
 ```
 Most popluar movie genres are dramas, followed by comedy, thriller and action. The drama genre has more more than tiwce the number of movies in the action genre. More than half the movies in our dataset are dramas.
@@ -284,22 +286,30 @@ Most popluar movie genres are dramas, followed by comedy, thriller and action. T
 ```{r Movie ratings corresponding to its genre / which genre has the highest ratings?}
 ## I'm trying to write a function here that can subset different genres and calculate the average rating for each genre and show it next to the bar in the graph above.
 
-# (genre_popularity <-data.frame(genres_df$name, data$popularity))
+#This is a tougher one, but here's a way to make it work...
 
+# data has the column we need called "id", but genres_df calls the same thing "movie_id" and uses the "id" column for genre id.  We need to fix that by adding a column to genre called "movie_id"
 
-subset(genres_df, name == "Comedy")
-as.factor(genres_df$name)
+data$movie_id <- data$id
 
+# The genres_df has movie_id as a character, which we need to make a numeric to match the original data tibble we have.
 
+genres_df$movie_id <- as.numeric(genres_df$movie_id)
 
+genre.and.popularity <- left_join(data, genres_df, by = "movie_id")
+#print(head(genre.and.popularity))
 
-plot <- ggplot(genres_df)+
-  geom_bar(aes(x = ))
+popularity.average <- genre.and.popularity %>% group_by(names.factored) %>% summarise(avg.pop = mean(popularity))
 
-names(data)
+ggplot(data = popularity.average) +
+  geom_bar(aes(x = reorder(names.factored, avg.pop), y = avg.pop), fill = "dark green", alpha = 0.5, stat = "identity") +
+  coord_flip()
+
+# check out https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/summarise for more on the super useful summarise() function in dplyr.
 
 ```
 
+Fantasy, Adventure, and Science fiction are the most popular (on average), but I would assume they are also more expensive to produce.
 
 ```{r Popular production companies}
 ggplot(data = production_companies_df)+
