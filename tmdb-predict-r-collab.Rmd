@@ -3,6 +3,8 @@ title: "TMDB Prediction - R-Collab"
 author: "Mike and Goutham"
 date: "September 22, 2019"
 output: html_document
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
