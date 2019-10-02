@@ -328,6 +328,7 @@ ggplot(cast_df)+
 names(data)
 
 ```
+
 ```{r Popularity vs Revenue}
 ggplot(data)+
   geom_point(aes(x = revenue, y = popularity), color = "dark green", alpha = 0.5)
@@ -361,6 +362,15 @@ ggplot(data)+
   xlab("Original language")
 ```
 To our suprise, Norwegian language seems to be the most popular followed by Indonesian and then english. Hebrew comes in at fourth and japanese at fifth. Indian movies, tough they are lengthy, are not liked by everyone.
+
+```{r number of movies for each language in dataset}
+table(data$original_language)
+```
+
+```{r visualize the table above}
+ggplot(data)+
+  geom_bar(aes(original_language), fill = "dark green", alpha = 0.5)
+```
 
 ## 3. Feature Engineering
 
