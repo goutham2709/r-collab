@@ -249,7 +249,7 @@ ggplot(data)+
 ```
 Movies that have higher revenue are not necessarily the longest movies or vice versa. The scatter plot shows no noticable relationship between the runtime of the movies and it's revenue.
 
-```{r Do the movies that have longer runtimes have a bigger budget?}
+```{r runtimes and budget}
 ggplot(data = data)+
   geom_point(aes(x = runtime, y = budget), color = "dark green", alpha = 0.5)
 
@@ -257,7 +257,7 @@ ggplot(data = data)+
 ```
 We assumed that movies with longer runtimes might have bigger budgets. But from the scatter plot above, we can see that it is not the case. The movies that have longer runtimes doesn't necessaritly have the bigger budget than those of shorter movies.
 
-```{r How runtimes vary with languages?}
+```{r runtime and languages}
 ggplot(data = data, aes(x = fct_reorder(original_language, runtime, .desc = T), y = runtime)) +
   geom_boxplot(color = "dark blue")+
   labs(x = "Original language")
@@ -265,7 +265,7 @@ ggplot(data = data, aes(x = fct_reorder(original_language, runtime, .desc = T), 
 
 
 ```
-Russian movies have the lowest runtimes while Marathi(One of indian language) has the highest runtime. Followed by Tamil (Also an indian languge). Fourth longest is Telugu and fifth is Hindi (Again, both are Indian languages). Indonesia has the third longest runtime and vietnamise comes in at sixth. Overall, south east asian countries seem to have the longest movies.
+Russian movies have the lowest runtimes while Marathi (One of the Indian languages) has the highest runtime. Followed by Tamil (Also an Indian languge). Fourth longest is Telugu and fifth is Hindi (Again, both are Indian languages). Indonesia has the third longest runtime and Vietnamese comes in at sixth. Overall, south east Asian countries seem to have the longest movies.
 
 English movies, which has the largest budget of all the movies don't run longer than movies with less budget. This supports our findings from the budget vs runtime scatter plot where we said there was no clear relationship betweeen movie runtime and it's budget.
 
@@ -285,7 +285,7 @@ ggplot(data = summary.genres) +
 Most popluar movie genres are dramas, followed by comedy, thriller and action. The drama genre has more more than tiwce the number of movies in the action genre. More than half the movies in our dataset are dramas.
 
 
-```{r Movie ratings corresponding to its genre / which genre has the highest ratings?}
+```{r genre and popularity}
 ## I'm trying to write a function here that can subset different genres and calculate the average rating for each genre and show it next to the bar in the graph above.
 
 #This is a tougher one, but here's a way to make it work...
@@ -314,15 +314,26 @@ ggplot(data = popularity.average) +
 Fantasy, Adventure, and Science fiction are the most popular (on average), but I would assume they are also more expensive to produce.
 
 ```{r Popular production companies}
-ggplot(data = production_companies_df)+
+
+total.names <- table(production_companies_df$name)
+
+names.important <- subset(production_companies_df, name %in% names(total.names[total.names > 20]))
+
+ggplot(data = names.important)+
   geom_bar(aes(x = name), fill = "dark green", alpha = 0.5)+
   coord_flip()
 
+#ggplot(data = production_companies_df)+
+  #geom_bar(aes(x = name), fill = "dark green", alpha = 0.5)+
+  #coord_flip()
+
 ##Unable to get a clear plot. Am I missing something? Too many and too large company names maybe? How do we visualize this column?
+
+##As an option, as you can see I restricted the plot to companies that have more than 20 entries in the database.
 ```
 
 
-```{r Which language has the highest revenue?}
+```{r language and revenue}
 ggplot(data)+
   stat_summary(aes(x = revenue, y = original_language), fun.ymin = min, fun.ymax = max,fun.y = median)+
   coord_flip()
@@ -332,12 +343,18 @@ ggplot(data)+
 English movies seem to have the higest revenue. As we saw earlier, they also have the highest budget from the budget vs origianl laguage boxplot. Chinese, French, Japanese and Hindi movies have similar revenues but nowhere near the english movies.
 
 ```{r Make cast vs Female cast}
-ggplot(cast_df)+
-  geom_bar(aes(x = gender), fill = "dark green", alpha = 0.5)
 
+gender.count <- select(cast_df, one_of(c("gender")))
+gender.count <- filter(gender.count, gender == 1 | gender == 2)
+
+ggplot(gender.count, aes(x =gender, ..count..)) +     
+  geom_bar()
 
 ## Unable to print plot properly. Don't know what's going wrong..!
-names(data)
+#names(data)
+
+## This one took me a while to figure out, it's a data cleaning problem. Many of the genders are 1 for female, 2 for male, and 0 for unknown or unimportant (I suppose), but in other rows it's a person's name. When it is factored, all of those names end up as factors. By selecting only the correct rows, we get what I think you were looking for.
+
 
 ```
 
@@ -353,9 +370,9 @@ One would assume that a popoular movie would bring in more revuenue. This seems 
 cor(data$revenue, data$popularity)
 ```
 
-The correlation value of 0.46 suppors our findings from the popularity vs revenue scatter plot. It shows a weak relationship between the two vairables.
+The correlation value of 0.46 suppors our findings from the popularity vs revenue scatter plot. It shows a weak relationship between the two variables. We can assume that some movies are popular but make less money because their target country has less money to spend and tickets are cheaper, but it's also possible that people liked the movie after it left the box office and so the movie made less money.
 
-```{r which language has the most revenue?}
+```{r language and revenue2}
 ggplot(data)+
   geom_boxplot(aes(x = fct_reorder(original_language, revenue, .desc = T), y = revenue), color = "dark blue")+
   xlab("Original language")
@@ -373,11 +390,13 @@ ggplot(data)+
   geom_boxplot(aes(x = fct_reorder(original_language, popularity, .desc = T), y = popularity), color = "dark blue")+
   xlab("Original language")
 ```
-To our suprise, Norwegian language seems to be the most popular followed by Indonesian and then english. Hebrew comes in at fourth and japanese at fifth. Indian movies, tough they are lengthy, are not liked by everyone.
+To our suprise, Norwegian language seems to be the most popular followed by Indonesian and then english. Hebrew comes in at fourth and japanese at fifth. Indian movies, tough they are lengthy, are not liked by everyone. Perhaps the Norweigians and Indonesians make so few movies, that everything they make is popular in that country?
 
 ```{r number of movies for each language in dataset}
 table(data$original_language)
 ```
+
+This suggests our hypothesis above may be correct, only two Nowegian movies, and one Indonesian movies. People in those countries got so excited about those three movies, their popularity is high.
 
 ```{r visualize the table above}
 ggplot(data)+
@@ -387,6 +406,49 @@ ggplot(data)+
 ## 3. Feature Engineering
 
 ### A. Making a profit column
+
+```{r raw profit}
+data <- mutate(data, raw.profit = revenue - budget)
+
+plot <- ggplot(data, aes(raw.profit)) + geom_histogram()
+print(plot)
+
+```
+
+It would appear most movies make a little, some lose money, and very few make huge profits.
+
+Let's see profit as a function of percentage return.
+
+```{r percent profit}
+data <- mutate(data, percent.profit = revenue / budget)
+# we have to leave out rows with missing/obviously wrong data
+useful.rows <- data[data$budget > 10000, ]
+
+#plot <- ggplot(data, aes(percent.profit)) + 
+#  geom_histogram(binwidth = 100, aes(y = ..density..))
+#print(plot)
+
+#how many movies were profitable?
+print(count(useful.rows[useful.rows$percent.profit > 0, ]))
+
+#2165
+
+#how many movies made double their money?
+print(count(useful.rows[useful.rows$percent.profit > 2, ]))
+#1081
+```
+
+So, for the 3,000 observations, 2,165 made some kind of profit, and 1,081 made double their money back (revenue was two times their budget)
+
+What was the most profitable?
+```{r max percent profit}
+print(max(useful.rows$percent.profit))
+print(useful.rows$original_title[useful.rows$percent.profit > 12000])
+```
+
+Paranormal Activity is the most profitable movie in our database, which is confirmed by the wikipedia article on this film. (https://en.wikipedia.org/wiki/Paranormal_Activity)
+
+It cost $15,000 to make, and made 193.4 million in revenue.  That's a 12,000% profit! 
 
 ## 4. Prediction 1
 
